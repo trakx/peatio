@@ -98,6 +98,10 @@ module API
             user_authorize! :create, ::Beneficiary
             declared_params = declared(params)
 
+            unless Vault::TOTP.validate?(current_user.uid, params[:otp])
+              error!({ errors: ['account.withdraw.invalid_otp'] }, 422)
+            end
+
             currency = Currency.find_by!(id: params[:currency_id])
             blockchain_currency = BlockchainCurrency.find_network(params[:blockchain_key], params[:currency_id])
             error!({ errors: ['account.beneficiary.network_not_found'] }, 422) unless blockchain_currency.present?
@@ -185,6 +189,30 @@ module API
               present beneficiary, with: API::V2::Entities::Beneficiary
             else
               error!({ errors: ['account.beneficiary.invalid_pin'] }, 422)
+            end
+          end
+
+          desc 'Update beneficiary'
+          params do
+            requires :id,
+                     type: { value: Integer, message: 'account.beneficiary.non_integer_id' },
+                     desc: 'Beneficiary Identifier in Database'
+            requires :state,
+                     type: String,
+                     values: { value: -> { %w[active disabled] }, message: 'account.beneficiary.invalid_state'},
+                     desc: 'Beneficiary state'
+          end
+          put ':id' do
+            user_authorize! :destroy, ::Beneficiary
+
+            beneficiary = current_user.beneficiaries
+                                      .available_to_member
+                                      .find_by!(id: params[:id])
+
+            if beneficiary.update(state: params[:state])
+              present beneficiary, with: API::V2::Entities::Beneficiary
+            else
+              error!({ errors: ['account.beneficiary.cant_update'] }, 422)
             end
           end
 
