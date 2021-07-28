@@ -63,6 +63,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_134633) do
     t.string "data_encrypted", limit: 1024
     t.integer "pin", limit: 3, null: false, unsigned: true
     t.datetime "sent_at"
+    t.datetime "expire_at"
     t.integer "state", limit: 1, default: 0, null: false, unsigned: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
