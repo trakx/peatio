@@ -164,7 +164,6 @@ module API
             status 204
           end
 
-
           desc 'Activates beneficiary with pin',
                success: API::V2::Entities::Beneficiary
 
@@ -209,6 +208,10 @@ module API
                      type: String,
                      values: { value: -> { %w[active disabled] }, message: 'account.beneficiary.invalid_state'},
                      desc: 'Beneficiary state'
+            requires :otp,
+                     type: { value: Integer, message: 'account.beneficiary.non_integer_otp' },
+                     allow_blank: false,
+                     desc: 'OTP to perform action'
           end
           put ':id' do
             user_authorize! :update, ::Beneficiary

@@ -111,8 +111,6 @@ module API
           end
 
           currency = Currency.find(params[:currency])
-          blockchain_currency = BlockchainCurrency.find_network(beneficiary.blockchain_key, params[:currency])
-          error!({ errors: ['account.withdraws.network_not_found'] }, 422) unless blockchain_currency.present?
 
           if current_user.beneficiaries_whitelisting
             error!({ errors: ['account.withdraw.missing_beneficiary_id'] }, 422) if params[:beneficiary_id].blank?
@@ -138,6 +136,8 @@ module API
 
           blockchain_currency = BlockchainCurrency.find_by!(currency_id: params[:currency],
                                                             blockchain_key: blockchain_key)
+          error!({ errors: ['account.withdraws.network_not_found'] }, 422) unless blockchain_currency.present?
+
           unless blockchain_currency.withdrawal_enabled?
             error!({ errors: ['account.currency.withdrawal_disabled'] }, 422)
           end
