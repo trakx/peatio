@@ -13,6 +13,11 @@ module Jobs
         Rails.logger.info { "Publish tickers: #{@tickers}" }
         Rails.cache.write(:markets_tickers, @cache_tickers)
         ::AMQP::Queue.enqueue_event('public', 'global', 'tickers', @tickers)
+
+        if Rails.cache.class == ActiveSupport::Cache::RedisCacheStore
+          Rails.cache.redis.set(:finex_markets_tickers, @cache_tickers.to_json)
+        end
+
         sleep 5
       end
 
