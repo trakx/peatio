@@ -127,7 +127,7 @@ ActiveRecord::Schema.define(version: 2021_08_06_081219) do
     t.string "currency_id", limit: 10, null: false
     t.decimal "amount", precision: 32, scale: 16, null: false
     t.decimal "fee", precision: 32, scale: 16, null: false
-    t.string "address", limit: 95
+    t.string "address", limit: 105
     t.text "from_addresses"
     t.string "txid", limit: 128, collation: "utf8_bin"
     t.integer "txout"
@@ -301,7 +301,7 @@ ActiveRecord::Schema.define(version: 2021_08_06_081219) do
   create_table "payment_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id"
     t.bigint "wallet_id"
-    t.string "address", limit: 95
+    t.string "address", limit: 105
     t.boolean "remote", default: false, null: false
     t.string "secret_encrypted"
     t.string "details_encrypted", limit: 1024
