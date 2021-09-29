@@ -54,7 +54,9 @@ module OpendaxCloud
                     tid: transaction.options.try(:[], :tid)
                   }.compact)
 
-      transaction.options = response['options']
+      transaction.options = { tid: response['tid'] } if response['tid'].present?
+      transaction.fee = response['fee']
+      transaction.fee_currency_id = currency_id
       transaction
     rescue OpendaxCloud::Client::Error => e
       raise Peatio::Wallet::ClientError, e
@@ -85,6 +87,8 @@ module OpendaxCloud
           to_address: params[:rid] || params[:address],
           txout: 0,
           status: translate_state(request.params[:event], params[:state]),
+          fee_currency_id: params[:currency],
+          fee: params[:fee],
           options: {
             tid: params[:tid]
           })
