@@ -151,6 +151,10 @@ class BlockchainService
   def update_or_create_deposit(transaction)
     blockchain_currency = BlockchainCurrency.find_network(@blockchain.key, transaction.currency_id)
 
+    # Transaction amount will be blank in case of failed trasanctions
+    # System'll update deposit on filter_deposit_txs then
+    return if transaction.amount.blank?
+
     if transaction.amount < blockchain_currency.min_deposit_amount
       # Currently we just skip tiny deposits.
       Rails.logger.info do

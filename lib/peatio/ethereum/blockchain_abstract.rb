@@ -263,11 +263,15 @@ module Ethereum
       currencies = @erc20.select { |c| c.dig(:options, contract_address_option) == txn_receipt.fetch('to') }
       return if currencies.blank?
 
+      fee = txn_receipt.fetch('gasUsed').hex
+
       currencies.each_with_object([]) do |currency, invalid_txs|
-        invalid_txs << { hash:         normalize_txid(txn_receipt.fetch('transactionHash')),
-                         block_number: txn_receipt.fetch('blockNumber').to_i(16),
-                         currency_id:  currency.fetch(:id),
-                         status:       transaction_status(txn_receipt) }
+        invalid_txs << { hash:            normalize_txid(txn_receipt.fetch('transactionHash')),
+                         block_number:    txn_receipt.fetch('blockNumber').to_i(16),
+                         currency_id:     currency.fetch(:id),
+                         fee_currency_id: native_currency_id,
+                         fee:             fee,
+                         status:          transaction_status(txn_receipt) }
       end
     end
 
