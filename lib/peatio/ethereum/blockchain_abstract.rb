@@ -225,7 +225,7 @@ module Ethereum
 
     def build_erc20_transactions(txn_receipt)
       # Build invalid transaction for failed withdrawals
-      if transaction_status(txn_receipt) == 'fail' && txn_receipt.fetch('logs').blank?
+      if transaction_status(txn_receipt) == 'failed' && txn_receipt.fetch('logs').blank?
         return build_invalid_erc20_transaction(txn_receipt)
       end
 
